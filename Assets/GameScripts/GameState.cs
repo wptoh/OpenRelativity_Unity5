@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Text; 
 using UnityEngine;
+using GameUtils;
+using CustomController;
 
 //using Microsoft.Xna.Framework;
 //using Microsoft.Xna.Framework.Audio;
@@ -140,13 +142,15 @@ public class GameState : MonoBehaviour
 			//When we unpause, lock the cursor and hide it so that it doesn't get in the way
 			movementFrozen = false;
 			Cursor.visible = false;
-			Screen.lockCursor = true;
+            Cursor.lockState = CursorLockMode.Locked;
+			//Screen.lockCursor = true;
 		} else {
 			//When we pause, set our velocity to zero, show the cursor and unlock it.
 			GameObject.FindGameObjectWithTag ("Playermesh").GetComponent<Rigidbody> ().velocity = Vector3.zero;
 			movementFrozen = true;
 			Cursor.visible = true;
-			Screen.lockCursor = false;
+            Cursor.lockState = CursorLockMode.None;
+			//Screen.lockCursor = false;
 		}
        
 	}
@@ -259,6 +263,21 @@ public class GameState : MonoBehaviour
         
 		}
 	}
+
+    private void OnControllerCommand(object sender, ControllerCommandEventArgs[] args)
+    {
+        foreach(ControllerCommandEventArgs arg in args)
+        {
+            GameCommand command = (GameCommand)arg.CommandID;
+            switch(command)
+            {
+                case GameCommand.MENU_COMMAND:
+                    menuKeyDown = true;
+			        ChangeState ();
+                    break;
+            }
+        }
+    }
 
 	#region Obsolete Math
 	/*
