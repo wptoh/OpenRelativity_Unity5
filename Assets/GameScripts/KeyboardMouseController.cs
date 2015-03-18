@@ -17,4 +17,17 @@ public class KeyboardMouseController : MonoBehaviour, IController
             mControllerCommand -= value;
         }
     }
+
+    private static KeyboardMouseController mInstance = null;
+    public static KeyboardMouseController Instance
+    {
+        get
+        {
+            if(mInstance == null)
+            {
+
+            }
+            return mInstance;
+        }
+    }
 }
