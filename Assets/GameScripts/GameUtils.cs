@@ -9,6 +9,8 @@ namespace GameUtils
         MENU_COMMAND = 1,
         SHADER_TOGGLE = 2,
         INVERT_TOGGLE = 3,
+        PLAYER_HORIZONTAL = 4,
+        PLAYER_VERTICAL = 5,
     }
 	
 }

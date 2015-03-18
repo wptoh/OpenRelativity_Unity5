@@ -5,8 +5,7 @@ using GameUtils;
 
 public class KeyboardMouseController : MonoBehaviour, IController
 {
-    private System.Collections.Generic.List<ControllerCommandEventArgs> mCommandList = new System.Collections.Generic.List<ControllerCommandEventArgs>();
-
+    #region Singleton Declaration
     private static KeyboardMouseController mInstance = null;
     public static KeyboardMouseController Instance
     {
@@ -21,6 +20,13 @@ public class KeyboardMouseController : MonoBehaviour, IController
             return mInstance;
         }
     }
+    #endregion
+
+
+    private System.Collections.Generic.List<ControllerCommandEventArgs> mCommandList = new System.Collections.Generic.List<ControllerCommandEventArgs>();
+
+    private float mHorizontal = 0;
+    private float mVertical = 0;
 
     private ControllerCommandHandler mControllerCommand = null;
     public event ControllerCommandHandler CommandsFired
@@ -54,6 +60,18 @@ public class KeyboardMouseController : MonoBehaviour, IController
         if (Input.GetButtonDown("Invert Button"))
         {
             mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.INVERT_TOGGLE));
+        }
+
+        if(mHorizontal != Input.GetAxis("Horizontal"))
+        {
+            mHorizontal = Input.GetAxis("Horizontal");
+            mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.PLAYER_HORIZONTAL, mHorizontal));
+        }
+
+        if(mVertical != Input.GetAxis("Vertical"))
+        {
+            mVertical = Input.GetAxis("Vertical");
+            mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.PLAYER_VERTICAL, mVertical));
         }
     }
 

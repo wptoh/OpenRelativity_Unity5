@@ -32,6 +32,9 @@ public class MovementScripts: MonoBehaviour
     //Gamestate reference for quick access
     GameState state;
 
+    private float horizontalInput = 0;
+    private float verticalInput = 0;
+
     void Start()
     {
         //grab Game State, we need it for many actions
@@ -49,6 +52,8 @@ public class MovementScripts: MonoBehaviour
         viwMax = Mathf.Min(viwMax, (float)GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MaxSpeed);
 		
         frames = 0;
+
+        AddController(KeyboardMouseController.Instance);
     }
 
     public void AddController(IController controller)
@@ -70,6 +75,14 @@ public class MovementScripts: MonoBehaviour
             {
                 case GameCommand.INVERT_TOGGLE:
                     inverted *= -1;
+                    break;
+                case GameCommand.PLAYER_HORIZONTAL:
+                    state.keyHit = true;
+                    horizontalInput = (float)arg.CommandArgs[0];
+                    break;
+                case GameCommand.PLAYER_VERTICAL:
+                    state.keyHit = false;
+                    verticalInput = (float)arg.CommandArgs[0];
                     break;
             }
         }
@@ -147,7 +160,7 @@ public class MovementScripts: MonoBehaviour
                 //UNCOMMENT THIS LINE if you would like to constrain the player to just x/z movement.
                 //Quaternion cameraRotation = Quaternion.AngleAxis(camTransform.eulerAngles.y, Vector3.up);
 
-
+                /*
                 float temp;
                 //Movement due to left/right input
                 addedVelocity += new Vector3(0, 0, (temp = -Input.GetAxis("Vertical")) * ACCEL_RATE * (float)Time.deltaTime);
@@ -161,6 +174,8 @@ public class MovementScripts: MonoBehaviour
                 {
                     state.keyHit = true;
                 }
+                */
+                addedVelocity += new Vector3(-horizontalInput, 0, -verticalInput) * ACCEL_RATE * Time.deltaTime;
 
                 //And rotate our added velocity by camera angle
 
@@ -172,17 +187,17 @@ public class MovementScripts: MonoBehaviour
                 if (addedVelocity.x == 0)
                 {
                     //find our current direction of movement and oppose it
-                    addedVelocity += new Vector3(-1 * SLOW_DOWN_RATE * playerVelocityVector.x * (float)Time.deltaTime, 0, 0);
+                    addedVelocity.x += -1 * SLOW_DOWN_RATE * playerVelocityVector.x * Time.deltaTime;//new Vector3(-1 * SLOW_DOWN_RATE * playerVelocityVector.x * (float)Time.deltaTime, 0, 0);
                 }
                 //If we are not adding velocity this round to our z direction, slow down
                 if (addedVelocity.z == 0)
                 {
-                    addedVelocity += new Vector3(0, 0, -1 * SLOW_DOWN_RATE * playerVelocityVector.z * (float)Time.deltaTime);
+                    addedVelocity.z += -1 * SLOW_DOWN_RATE * playerVelocityVector.z * Time.deltaTime;// new Vector3(0, 0, -1 * SLOW_DOWN_RATE * playerVelocityVector.z * (float)Time.deltaTime);
                 }
                 //If we are not adding velocity this round to our y direction, slow down
                 if (addedVelocity.y == 0)
                 {
-                    addedVelocity += new Vector3(0, -1 * SLOW_DOWN_RATE * playerVelocityVector.y * (float)Time.deltaTime, 0);
+                    addedVelocity.y += -1 * SLOW_DOWN_RATE * playerVelocityVector.y * Time.deltaTime;// new Vector3(0, -1 * SLOW_DOWN_RATE * playerVelocityVector.y * (float)Time.deltaTime, 0);
                 }
                 /*
 				 * IF you turn on this bit of code, you'll get head bob. It's a fun little effect, but if you make the magnitude of the cosine too large it gets sickening.
