@@ -7,6 +7,8 @@ namespace GameUtils
     {
         UNKNOWN = 0,
         MENU_COMMAND = 1,
+        SHADER_TOGGLE = 2,
+        INVERT_TOGGLE = 3,
     }
 	
 }

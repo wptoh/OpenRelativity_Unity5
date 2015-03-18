@@ -7,9 +7,18 @@ namespace CustomController
     {
         public uint CommandID;
         public object[] CommandArgs;
+
+        public static ControllerCommandEventArgs Generate(uint commandID, params object[] args)
+        {
+            return new ControllerCommandEventArgs()
+            {
+                CommandID = commandID,
+                CommandArgs = args,
+            };
+        }
     }
 
-    public delegate void ControllerCommandHandler(object sender, ControllerCommandEventArgs[] args);
+    public delegate void ControllerCommandHandler(object sender,ControllerCommandEventArgs[] args);
 
     public interface IController
     {

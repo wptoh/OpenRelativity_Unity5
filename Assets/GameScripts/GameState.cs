@@ -19,55 +19,57 @@ public class GameState : MonoBehaviour
 {
     #region Member Variables
 
-	private System.IO.TextWriter stateStream;
+    private System.IO.TextWriter stateStream;
 
-	//Player orientation
-	private Quaternion orientation = Quaternion.identity;
-	//world rotation so that we can transform between the two
-	private Matrix4x4 worldRotation;
-	//Player's velocity in vector format
-	private Vector3 playerVelocityVector;
+    //Player orientation
+    private Quaternion orientation = Quaternion.identity;
+    //world rotation so that we can transform between the two
+    private Matrix4x4 worldRotation;
+    //Player's velocity in vector format
+    private Vector3 playerVelocityVector;
 
-	//grab the player's transform so that we can use it
-	public Transform playerTransform;
-	//If we've paused the game
-	private bool movementFrozen = false;
-	//player Velocity as a scalar magnitude
-	public double playerVelocity;
-	//time passed since last frame in the world frame
-	private double deltaTimeWorld;
-	//time passed since last frame in the player frame
-	private double deltaTimePlayer;
-	//total time passed in the player frame
-	private double totalTimePlayer;
-	//total time passed in the world frame
-	private double totalTimeWorld;
-	//speed of light
-	private double c = 200;
-	//Speed of light that is affected by the Unity editor
-	public double totalC = 200;
-	//max speed the player can achieve (starting value accessible from Unity Editor)
-	public double maxPlayerSpeed;
-	//max speed, for game use, not accessible from Unity Editor
-	private double maxSpeed;
-	//speed of light squared, kept for easy access in many calculations
-	private double cSqrd;
+    //grab the player's transform so that we can use it
+    public Transform playerTransform;
+    //If we've paused the game
+    private bool movementFrozen = false;
+    //player Velocity as a scalar magnitude
+    public double playerVelocity;
+    //time passed since last frame in the world frame
+    private double deltaTimeWorld;
+    //time passed since last frame in the player frame
+    private double deltaTimePlayer;
+    //total time passed in the player frame
+    private double totalTimePlayer;
+    //total time passed in the world frame
+    private double totalTimeWorld;
+    //speed of light
+    private double c = 200;
+    //Speed of light that is affected by the Unity editor
+    public double totalC = 200;
+    //max speed the player can achieve (starting value accessible from Unity Editor)
+    public double maxPlayerSpeed;
+    //max speed, for game use, not accessible from Unity Editor
+    private double maxSpeed;
+    //speed of light squared, kept for easy access in many calculations
+    private double cSqrd;
 	
-	//Use this to determine the state of the color shader. If it's True, all you'll see is the lorenz transform.
-	private bool shaderOff = false;
+    //Use this to determine the state of the color shader. If it's True, all you'll see is the lorenz transform.
+    private bool shaderOff = false;
 	
-	//Did we hit the menu key?
-	public bool menuKeyDown = false;
-	//Did we hit the shader key?
-	public bool shaderKeyDown = false;
+    //Redundent
+    /*
+    //Did we hit the menu key?
+    public bool menuKeyDown = false;
+    //Did we hit the shader key?
+    public bool shaderKeyDown = false;
+    */
 
-
-	//This is a value that gets used in many calculations, so we calculate it each frame
-	private double sqrtOneMinusVSquaredCWDividedByCSquared;
-	//Player rotation and change in rotation since last frame
-	public Vector3 playerRotation = new Vector3 (0, 0, 0);
-	public Vector3 deltaRotation = new Vector3 (0, 0, 0);
-	public double pctOfSpdUsing = 0; // Percent of velocity you are using
+    //This is a value that gets used in many calculations, so we calculate it each frame
+    private double sqrtOneMinusVSquaredCWDividedByCSquared;
+    //Player rotation and change in rotation since last frame
+    public Vector3 playerRotation = new Vector3(0, 0, 0);
+    public Vector3 deltaRotation = new Vector3(0, 0, 0);
+    public double pctOfSpdUsing = 0; // Percent of velocity you are using
 
 
 
@@ -75,170 +77,199 @@ public class GameState : MonoBehaviour
 
     #region Properties
 	
-	public float finalMaxSpeed = .99f;
-	public bool MovementFrozen { get { return movementFrozen; } set { movementFrozen = value; } }
+    public float finalMaxSpeed = .99f;
+    public bool MovementFrozen { get { return movementFrozen; } set { movementFrozen = value; } }
 
-	public Matrix4x4 WorldRotation { get { return worldRotation; } }
-	public Quaternion Orientation { get { return orientation; } }
-	public Vector3 PlayerVelocityVector { get { return playerVelocityVector; } set { playerVelocityVector = value; } }
+    public Matrix4x4 WorldRotation { get { return worldRotation; } }
+    public Quaternion Orientation { get { return orientation; } }
+    public Vector3 PlayerVelocityVector { get { return playerVelocityVector; } set { playerVelocityVector = value; } }
 
-	public double PctOfSpdUsing { get { return pctOfSpdUsing; } set { pctOfSpdUsing = value; } }
-	public double PlayerVelocity { get { return playerVelocity; } }
-	public double SqrtOneMinusVSquaredCWDividedByCSquared { get { return sqrtOneMinusVSquaredCWDividedByCSquared; } }
-	public double DeltaTimeWorld { get { return deltaTimeWorld; } }
-	public double DeltaTimePlayer { get { return deltaTimePlayer; } }
-	public double TotalTimePlayer { get { return totalTimePlayer; } }
-	public double TotalTimeWorld { get { return totalTimeWorld; } }
-	public double SpeedOfLight {
-		get { return c; }
-		set {
-			c = value;
-			cSqrd = value * value;
-		}
-	}
-	public double SpeedOfLightSqrd { get { return cSqrd; } }
+    public double PctOfSpdUsing { get { return pctOfSpdUsing; } set { pctOfSpdUsing = value; } }
+    public double PlayerVelocity { get { return playerVelocity; } }
+    public double SqrtOneMinusVSquaredCWDividedByCSquared { get { return sqrtOneMinusVSquaredCWDividedByCSquared; } }
+    public double DeltaTimeWorld { get { return deltaTimeWorld; } }
+    public double DeltaTimePlayer { get { return deltaTimePlayer; } }
+    public double TotalTimePlayer { get { return totalTimePlayer; } }
+    public double TotalTimeWorld { get { return totalTimeWorld; } }
+    public double SpeedOfLight
+    {
+        get { return c; }
+        set
+        {
+            c = value;
+            cSqrd = value * value;
+        }
+    }
+    public double SpeedOfLightSqrd { get { return cSqrd; } }
 
-	public bool keyHit = false;
-	public double MaxSpeed { get { return maxSpeed; } set { maxSpeed = value; } }
+    public bool keyHit = false;
+    public double MaxSpeed { get { return maxSpeed; } set { maxSpeed = value; } }
     #endregion
 
     #region consts
-	private const float ORB_SPEED_INC = 0.05f;
-	private const float ORB_DECEL_RATE = 0.6f;
-	private const float ORB_SPEED_DUR = 2f;
-	private const float MAX_SPEED = 20.00f;
-	public  const float NORM_PERCENT_SPEED = .99f;
-	public const int splitDistance = 21000;
+    private const float ORB_SPEED_INC = 0.05f;
+    private const float ORB_DECEL_RATE = 0.6f;
+    private const float ORB_SPEED_DUR = 2f;
+    private const float MAX_SPEED = 20.00f;
+    public  const float NORM_PERCENT_SPEED = .99f;
+    public const int splitDistance = 21000;
     #endregion
 
 
-	public void Awake ()
-	{
-		//Initialize the player's speed to zero
-		playerVelocityVector = Vector3.zero;
-		playerVelocity = 0;
-		//Set our constants
-		MaxSpeed = MAX_SPEED;
-		pctOfSpdUsing = NORM_PERCENT_SPEED;
+    public void Awake()
+    {
+        //Initialize the player's speed to zero
+        playerVelocityVector = Vector3.zero;
+        playerVelocity = 0;
+        //Set our constants
+        MaxSpeed = MAX_SPEED;
+        pctOfSpdUsing = NORM_PERCENT_SPEED;
 		
-		c = totalC;
-		cSqrd = c * c;
-		//And ensure that the game starts/
-		movementFrozen = false;
-        
-	}
-	public void reset ()
-	{
-		//Reset everything not level-based
-		playerRotation.x = 0;
-		playerRotation.y = 0;
-		playerRotation.z = 0;
-		pctOfSpdUsing = 0;
-	}
-	//Call this function to pause and unpause the game
-	public void ChangeState ()
-	{
-		if (movementFrozen) {
-			//When we unpause, lock the cursor and hide it so that it doesn't get in the way
-			movementFrozen = false;
-			Cursor.visible = false;
+        c = totalC;
+        cSqrd = c * c;
+        //And ensure that the game starts/
+        movementFrozen = false;
+        AddController(KeyboardMouseController.Instance);
+    }
+
+    public void AddController(IController controller)
+    {
+        controller.CommandsFired += OnControllerCommand;
+    }
+
+    public void RemoveController(IController controller)
+    {
+        controller.CommandsFired -= OnControllerCommand;
+    }
+
+    public void reset()
+    {
+        //Reset everything not level-based
+        playerRotation.x = 0;
+        playerRotation.y = 0;
+        playerRotation.z = 0;
+        pctOfSpdUsing = 0;
+    }
+    //Call this function to pause and unpause the game
+    public void ChangeState()
+    {
+        if (movementFrozen)
+        {
+            //When we unpause, lock the cursor and hide it so that it doesn't get in the way
+            movementFrozen = false;
+            Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-			//Screen.lockCursor = true;
-		} else {
-			//When we pause, set our velocity to zero, show the cursor and unlock it.
-			GameObject.FindGameObjectWithTag ("Playermesh").GetComponent<Rigidbody> ().velocity = Vector3.zero;
-			movementFrozen = true;
-			Cursor.visible = true;
+            //Screen.lockCursor = true;
+        } else
+        {
+            //When we pause, set our velocity to zero, show the cursor and unlock it.
+            GameObject.FindGameObjectWithTag("Playermesh").GetComponent<Rigidbody>().velocity = Vector3.zero;
+            movementFrozen = true;
+            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-			//Screen.lockCursor = false;
-		}
+            //Screen.lockCursor = false;
+        }
        
-	}
-	//We set this in late update because of timing issues with collisions
-	public void LateUpdate ()
-	{
-		//Set the pause code in here so that our other objects can access it.
-		if (Input.GetAxis ("Menu Key") > 0 && !menuKeyDown) {
-			menuKeyDown = true;
-			ChangeState ();
-		}
+    }
+    //We set this in late update because of timing issues with collisions
+    public void LateUpdate()
+    {
+        /*
+        //Set the pause code in here so that our other objects can access it.
+        if (Input.GetAxis("Menu Key") > 0 && !menuKeyDown)
+        {
+            menuKeyDown = true;
+            ChangeState();
+        }
 		//set up our buttonUp function
-        else if (!(Input.GetAxis ("Menu Key") > 0)) {
-			menuKeyDown = false;
-		}
-		//Set our button code for the shader on/off button
-		if (Input.GetAxis ("Shader") > 0 && !shaderKeyDown) {
-			if (shaderOff)
-				shaderOff = false;
-			else
-				shaderOff = true;
+        else if (!(Input.GetAxis("Menu Key") > 0))
+        {
+            menuKeyDown = false;
+        }
+        //Set our button code for the shader on/off button
+        if (Input.GetAxis("Shader") > 0 && !shaderKeyDown)
+        {
+            if (shaderOff)
+                shaderOff = false;
+            else
+                shaderOff = true;
 			
-			shaderKeyDown = true;
-		}
+            shaderKeyDown = true;
+        }
 		//set up our buttonUp function
-        else if (!(Input.GetAxis ("Shader") > 0)) {
-			shaderKeyDown = false;
-		}
+        else if (!(Input.GetAxis("Shader") > 0))
+        {
+            shaderKeyDown = false;
+        }
+        */
 		
-		//If we're not paused, update everything
-		if (!movementFrozen) {
-			//Put our player position into the shader so that it can read it.
-			Shader.SetGlobalVector ("_playerOffset", new Vector4 (playerTransform.position.x, playerTransform.position.y, playerTransform.position.z, 0));
+        //If we're not paused, update everything
+        if (!movementFrozen)
+        {
+            //Put our player position into the shader so that it can read it.
+            Shader.SetGlobalVector("_playerOffset", new Vector4(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z, 0));
            
 		
-			//if we reached max speed, forward or backwards, keep at max speed
+            //if we reached max speed, forward or backwards, keep at max speed
 
-			if (playerVelocityVector.magnitude >= (float)MaxSpeed - .01f) {
-				playerVelocityVector = playerVelocityVector.normalized * ((float)MaxSpeed - .01f);
-			}
+            if (playerVelocityVector.magnitude >= (float)MaxSpeed - .01f)
+            {
+                playerVelocityVector = playerVelocityVector.normalized * ((float)MaxSpeed - .01f);
+            }
             
-			//update our player velocity
-			playerVelocity = playerVelocityVector.magnitude;
+            //update our player velocity
+            playerVelocity = playerVelocityVector.magnitude;
             
 
-			//During colorshift on/off, during the last level we don't want to have the funky
-			//colors changing so they can apperciate the other effects
-			if (shaderOff) {
-				Shader.SetGlobalFloat ("_colorShift", (float)0.0);
-			} else {
-				Shader.SetGlobalFloat ("_colorShift", (float)1);
-			}
+            //During colorshift on/off, during the last level we don't want to have the funky
+            //colors changing so they can apperciate the other effects
+            if (shaderOff)
+            {
+                Shader.SetGlobalFloat("_colorShift", (float)0.0);
+            } else
+            {
+                Shader.SetGlobalFloat("_colorShift", (float)1);
+            }
 
-			//Send v/c to shader
-			Shader.SetGlobalVector ("_vpc", new Vector4 (-playerVelocityVector.x, -playerVelocityVector.y, -playerVelocityVector.z, 0) / (float)c);
-			//Send world time to shader
-			Shader.SetGlobalFloat ("_wrldTime", (float)TotalTimeWorld);
+            //Send v/c to shader
+            Shader.SetGlobalVector("_vpc", new Vector4(-playerVelocityVector.x, -playerVelocityVector.y, -playerVelocityVector.z, 0) / (float)c);
+            //Send world time to shader
+            Shader.SetGlobalFloat("_wrldTime", (float)TotalTimeWorld);
            
-			/******************************
+            /******************************
              * PART TWO OF ALGORITHM
              * THE NEXT 4 LINES OF CODE FIND
              * THE TIME PASSED IN WORLD FRAME
              * ****************************/
-			//find this constant
-			sqrtOneMinusVSquaredCWDividedByCSquared = (double)Math.Sqrt (1 - Math.Pow (playerVelocity, 2) / cSqrd);
+            //find this constant
+            sqrtOneMinusVSquaredCWDividedByCSquared = (double)Math.Sqrt(1 - Math.Pow(playerVelocity, 2) / cSqrd);
 			
-			//Set by Unity, time since last update
-			deltaTimePlayer = (double)Time.deltaTime; 
-			//Get the total time passed of the player and world for display purposes
-			if (keyHit) {
-				totalTimePlayer += deltaTimePlayer;
-				if (!double.IsNaN (sqrtOneMinusVSquaredCWDividedByCSquared)) {
-					//Get the delta time passed for the world, changed by relativistic effects
-					deltaTimeWorld = deltaTimePlayer / sqrtOneMinusVSquaredCWDividedByCSquared;
-					//and get the total time passed in the world
-					totalTimeWorld += deltaTimeWorld;
-				}
-			}
+            //Set by Unity, time since last update
+            deltaTimePlayer = (double)Time.deltaTime; 
+            //Get the total time passed of the player and world for display purposes
+            if (keyHit)
+            {
+                totalTimePlayer += deltaTimePlayer;
+                if (!double.IsNaN(sqrtOneMinusVSquaredCWDividedByCSquared))
+                {
+                    //Get the delta time passed for the world, changed by relativistic effects
+                    deltaTimeWorld = deltaTimePlayer / sqrtOneMinusVSquaredCWDividedByCSquared;
+                    //and get the total time passed in the world
+                    totalTimeWorld += deltaTimeWorld;
+                }
+            }
         
-			//Set our rigidbody's velocity
-			if (!double.IsNaN (deltaTimePlayer) && !double.IsNaN (sqrtOneMinusVSquaredCWDividedByCSquared)) {
-				GameObject.FindGameObjectWithTag ("Playermesh").GetComponent<Rigidbody> ().velocity = -1 * (playerVelocityVector / (float)sqrtOneMinusVSquaredCWDividedByCSquared);
-			}
+            //Set our rigidbody's velocity
+            if (!double.IsNaN(deltaTimePlayer) && !double.IsNaN(sqrtOneMinusVSquaredCWDividedByCSquared))
+            {
+                GameObject.FindGameObjectWithTag("Playermesh").GetComponent<Rigidbody>().velocity = -1 * (playerVelocityVector / (float)sqrtOneMinusVSquaredCWDividedByCSquared);
+            }
 			//But if either of those two constants is null due to a zero error, that means our velocity is zero anyways.
-            else {
-				GameObject.FindGameObjectWithTag ("Playermesh").GetComponent<Rigidbody> ().velocity = Vector3.zero;
-			}
-			/*****************************
+            else
+            {
+                GameObject.FindGameObjectWithTag("Playermesh").GetComponent<Rigidbody>().velocity = Vector3.zero;
+            }
+            /*****************************
              * PART 3 OF ALGORITHM
              * FIND THE ROTATION MATRIX
              * AND CHANGE THE PLAYERS VELOCITY
@@ -246,41 +277,43 @@ public class GameState : MonoBehaviour
              * ***************************/
 
 
-			//Find the turn angle
-			//Steering constant angular velocity in the player frame
-			//Rotate around the y-axis
+            //Find the turn angle
+            //Steering constant angular velocity in the player frame
+            //Rotate around the y-axis
 
-			orientation = Quaternion.AngleAxis (playerRotation.y, Vector3.up) * Quaternion.AngleAxis (playerRotation.x, Vector3.right);
-			Quaternion WorldOrientation = Quaternion.Inverse (orientation);
-			orientation = orientation.Normalize ();
-			worldRotation = MathUtility.CreateFromQuaternion (WorldOrientation);
+            orientation = Quaternion.AngleAxis(playerRotation.y, Vector3.up) * Quaternion.AngleAxis(playerRotation.x, Vector3.right);
+            Quaternion WorldOrientation = Quaternion.Inverse(orientation);
+            orientation = orientation.Normalize();
+            worldRotation = MathUtility.CreateFromQuaternion(WorldOrientation);
 
            
 
-			//Add up our rotation so that we know where the character (NOT CAMERA) should be facing 
-			playerRotation += deltaRotation;
+            //Add up our rotation so that we know where the character (NOT CAMERA) should be facing 
+            playerRotation += deltaRotation;
 
         
-		}
-	}
+        }
+    }
 
     private void OnControllerCommand(object sender, ControllerCommandEventArgs[] args)
     {
-        foreach(ControllerCommandEventArgs arg in args)
+        foreach (ControllerCommandEventArgs arg in args)
         {
             GameCommand command = (GameCommand)arg.CommandID;
-            switch(command)
+            switch (command)
             {
                 case GameCommand.MENU_COMMAND:
-                    menuKeyDown = true;
-			        ChangeState ();
+                    ChangeState();
+                    break;
+                case GameCommand.SHADER_TOGGLE:
+                    shaderOff = !shaderOff;
                     break;
             }
         }
     }
 
 	#region Obsolete Math
-	/*
+    /*
 
     #region Matrix/Quat math
     //They are functions that XNA had but Unity doesn't, so I had to make them myself
