@@ -27,6 +27,7 @@ public class KeyboardMouseController : MonoBehaviour, IController
 
     private float mHorizontal = 0;
     private float mVertical = 0;
+    private float mSpeedOfLight = 0;
 
     private ControllerCommandHandler mControllerCommand = null;
     public event ControllerCommandHandler CommandsFired
@@ -62,16 +63,21 @@ public class KeyboardMouseController : MonoBehaviour, IController
             mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.INVERT_TOGGLE));
         }
 
-        if(mHorizontal != Input.GetAxis("Horizontal"))
+        if (mHorizontal != Input.GetAxis("Horizontal"))
         {
             mHorizontal = Input.GetAxis("Horizontal");
             mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.PLAYER_HORIZONTAL, mHorizontal));
         }
 
-        if(mVertical != Input.GetAxis("Vertical"))
+        if (mVertical != Input.GetAxis("Vertical"))
         {
             mVertical = Input.GetAxis("Vertical");
             mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.PLAYER_VERTICAL, mVertical));
+        }
+        if (mSpeedOfLight != Input.GetAxis("Speed of Light"))
+        {
+            mSpeedOfLight = Input.GetAxis("Speed of Light");
+            mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.LIGHT_SPEED, mSpeedOfLight));
         }
     }
 

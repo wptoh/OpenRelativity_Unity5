@@ -32,6 +32,7 @@ public class GameState : MonoBehaviour
     public Transform playerTransform;
     //If we've paused the game
     private bool movementFrozen = false;
+
     //player Velocity as a scalar magnitude
     public double playerVelocity;
     //time passed since last frame in the world frame
@@ -78,7 +79,17 @@ public class GameState : MonoBehaviour
     #region Properties
 	
     public float finalMaxSpeed = .99f;
-    public bool MovementFrozen { get { return movementFrozen; } set { movementFrozen = value; } }
+    public bool MovementFrozen
+    { 
+        get
+        { 
+            return movementFrozen; 
+        } 
+        set
+        { 
+            movementFrozen = value; 
+        } 
+    }
 
     public Matrix4x4 WorldRotation { get { return worldRotation; } }
     public Quaternion Orientation { get { return orientation; } }

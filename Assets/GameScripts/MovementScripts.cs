@@ -10,7 +10,9 @@ public class MovementScripts: MonoBehaviour
     private const float ACCEL_RATE = 20f;
     private const int INIT_FRAME_WAIT = 5;
     private const float DEGREE_TO_RADIAN_CONST = 57.2957795f;
-    
+
+    private bool cameraReady = false;
+
     //Affect our rotation speed
     public float rotSpeed;
     //Keep track of the camera transform
@@ -19,6 +21,9 @@ public class MovementScripts: MonoBehaviour
     private int inverted;
     //What is our current target for the speed of light?
     public int speedOfLightTarget;
+
+    private int speedOfLightInput = 0;
+
     //What is each step we take to reach that target?
     private float speedOfLightStep;
     //For now, you can change this how you like.
@@ -26,7 +31,8 @@ public class MovementScripts: MonoBehaviour
     //So we can use getAxis as keyHit function
     public bool invertKeyDown = false;    
     //Keep track of total frames passed
-    int frames;    
+    //int frames;  
+
     //How fast are we going to shoot the bullets?
     public float viwMax = 3;
     //Gamestate reference for quick access
@@ -51,9 +57,19 @@ public class MovementScripts: MonoBehaviour
 		
         viwMax = Mathf.Min(viwMax, (float)GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MaxSpeed);
 		
-        frames = 0;
+        //frames = 0;
+        StartCoroutine(WaitForCameraReady(INIT_FRAME_WAIT));
 
         AddController(KeyboardMouseController.Instance);
+    }
+
+    private IEnumerator WaitForCameraReady(int frame)
+    {
+        for (int i = 0; i<frame; ++i)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        cameraReady = true;
     }
 
     public void AddController(IController controller)
@@ -78,11 +94,14 @@ public class MovementScripts: MonoBehaviour
                     break;
                 case GameCommand.PLAYER_HORIZONTAL:
                     state.keyHit = true;
-                    horizontalInput = (float)arg.CommandArgs[0];
+                    horizontalInput = (float)arg.CommandArgs [0];
                     break;
                 case GameCommand.PLAYER_VERTICAL:
                     state.keyHit = false;
-                    verticalInput = (float)arg.CommandArgs[0];
+                    verticalInput = (float)arg.CommandArgs [0];
+                    break;
+                case GameCommand.LIGHT_SPEED:
+                    speedOfLightInput = (int)((float)arg.CommandArgs [0]);
                     break;
             }
         }
@@ -230,16 +249,16 @@ public class MovementScripts: MonoBehaviour
                 //CHANGE the speed of light
 			  	
                 //Get our input axis (DEFAULT N, M) value to determine how much to change the speed of light
-                int temp2 = (int)(Input.GetAxis("Speed of Light"));
+                //int temp2 = (int)(Input.GetAxis("Speed of Light"));
                 //If it's too low, don't subtract from the speed of light, and reset the speed of light
-                if (temp2 < 0 && speedOfLightTarget <= state.MaxSpeed)
+                if (speedOfLightInput < 0 && speedOfLightTarget <= state.MaxSpeed)
                 {
-                    temp2 = 0;
+                    speedOfLightInput = 0;
                     speedOfLightTarget = (int)state.MaxSpeed;
                 }
-                if (temp2 != 0)
+                if (speedOfLightInput != 0)
                 {
-                    speedOfLightTarget += temp2;		
+                    speedOfLightTarget += speedOfLightInput;		
 					
                     speedOfLightStep = Mathf.Abs((float)(state.SpeedOfLight - speedOfLightTarget) / 20);
                 }
@@ -278,6 +297,15 @@ public class MovementScripts: MonoBehaviour
 
                 //Perform Rotation on the camera, so that we can look in places that aren't the direction of movement
                 //Wait some frames on start up, otherwise we spin during the intialization when we can't see yet
+                if (cameraReady)
+                {
+                    camTransform.Rotate(new Vector3(0, viewRotX, 0), Space.World);
+                    if ((camTransform.eulerAngles.x + viewRotY < 90 && camTransform.eulerAngles.x + viewRotY > 90 - 180) || (camTransform.eulerAngles.x + viewRotY > 270 && camTransform.eulerAngles.x + viewRotY < 270 + 180))
+                    {
+                        camTransform.Rotate(new Vector3(viewRotY, 0, 0));
+                    }
+                }
+                /*
                 if (frames > INIT_FRAME_WAIT)
                 {
                     camTransform.Rotate(new Vector3(0, viewRotX, 0), Space.World);
@@ -290,6 +318,7 @@ public class MovementScripts: MonoBehaviour
                     //keep track of our frames
                     frames++;                
                 }
+                */
 
                 //If we have a speed of light less than max speed, fix it.
                 //This should never happen
