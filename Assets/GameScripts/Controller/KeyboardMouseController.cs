@@ -45,10 +45,24 @@ public class KeyboardMouseController : MonoBehaviour, IController
         }
     }
 
+    private void Start()
+    {
+        StartCoroutine(ProcessCommands(0.02f));
+    }
+
+    private IEnumerator ProcessCommands(float delay)
+    {
+        while(true)
+        {
+            DispatchCommands();
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
     private void Update()
     {
         ReadInput();
-        DispatchCommands();
+        //DispatchCommands();
     }
 
     private void ReadInput()
