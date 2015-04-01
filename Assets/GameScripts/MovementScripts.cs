@@ -106,6 +106,12 @@ public class MovementScripts: MonoBehaviour
                 case GameCommand.LIGHT_SPEED:
                     speedOfLightInput = (int)((float)arg.CommandArgs [0]);
                     break;
+                case GameCommand.CAMERA_HORIZONTAL:
+                    cameraX = (float)(arg.CommandArgs[0]);
+                    break;
+                case GameCommand.CAMERA_VERTICAL:
+                    cameraY = (float)(arg.CommandArgs[0]);
+                    break;
             }
         }
     }
@@ -285,18 +291,20 @@ public class MovementScripts: MonoBehaviour
                 //Current position of the mouse
                 //Difference between last frame's mouse position
                 //X axis position change
-                float positionChangeX = -(float)Input.GetAxisRaw("Mouse X");
+                //float positionChangeX = -(float)Input.GetAxisRaw("Mouse X");
 
                 //Y axis position change
-                float positionChangeY = (float)inverted * Input.GetAxisRaw("Mouse Y");
+                //float positionChangeY = (float)inverted * Input.GetAxisRaw("Mouse Y");
 
 
                 //Use these to determine camera rotation, that is, to look around the world without changing direction of motion
                 //These two are for X axis rotation and Y axis rotation, respectively
                 float viewRotY = 0;
                 //Take the position changes and translate them into an amount of rotation
-                viewRotX = (float)(-positionChangeX * Time.deltaTime * rotSpeed * mouseSensitivity);
-                viewRotY = (float)(positionChangeY * Time.deltaTime * rotSpeed * mouseSensitivity);
+                //viewRotX = (float)(-positionChangeX * Time.deltaTime * rotSpeed * mouseSensitivity);
+                //viewRotY = (float)(positionChangeY * Time.deltaTime * rotSpeed * mouseSensitivity);
+                viewRotX = (float)(-cameraX * Time.deltaTime * rotSpeed * mouseSensitivity);
+                viewRotY = (float)(inverted * cameraY * Time.deltaTime * rotSpeed * mouseSensitivity);
 
                 //Perform Rotation on the camera, so that we can look in places that aren't the direction of movement
                 //Wait some frames on start up, otherwise we spin during the intialization when we can't see yet

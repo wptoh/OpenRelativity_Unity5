@@ -82,6 +82,16 @@ public class KeyboardMouseController : MonoBehaviour, IController
             mSpeedOfLight = Input.GetAxis("Speed of Light");
             mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.LIGHT_SPEED, mSpeedOfLight));
         }
+        if(mMouseHorizontal != -Input.GetAxis("Mouse X"))
+        {
+            mMouseHorizontal = -Input.GetAxis("Mouse X");
+            mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.CAMERA_HORIZONTAL, mMouseHorizontal));
+        }
+        if (mMouseVertical != Input.GetAxis("Mouse Y"))
+        {
+            mMouseVertical = Input.GetAxis("Mouse Y");
+            mCommandList.Add(ControllerCommandEventArgs.Generate((uint)GameUtils.GameCommand.CAMERA_VERTICAL, mMouseVertical));
+        }
     }
 
     private void DispatchCommands()
