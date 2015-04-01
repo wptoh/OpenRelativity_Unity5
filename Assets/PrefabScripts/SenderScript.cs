@@ -24,13 +24,19 @@ public class SenderScript : MonoBehaviour {
 		//Point to the associated receiver.
         this.transform.LookAt(receiverTransform);
 		//Take the minimum of the chosen viwMax, and the Game State's chosen Max Speed
-        viwMax = Mathf.Min(viwMax,(float)GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MaxSpeed);
+        //viwMax = Mathf.Min(viwMax,(float)GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MaxSpeed);
+
+        viwMax = Mathf.Min(viwMax, (float)GameState.Instance.MaxSpeed);
     }
 
     // Update is called once per frame
     void Update()
     {	//If we're not paused, increment the timer
-        if (!GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MovementFrozen)
+        //if (!GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MovementFrozen)
+        //{
+        //    launchCounter += Time.deltaTime;
+        //}
+        if (!GameState.Instance.MovementFrozen)
         {
             launchCounter += Time.deltaTime;
         }

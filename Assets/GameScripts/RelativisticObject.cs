@@ -20,7 +20,7 @@ public class RelativisticObject : MonoBehaviour {
 	// Get the start time of our object, so that we know where not to draw it
     public void SetStartTime()
     {
-        startTime = (float) GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().TotalTimeWorld;
+        startTime = (float)GameState.Instance.TotalTimeWorld;
     }
 	//Set the death time, so that we know at what point to destroy the object in the player's view point.
     public void SetDeathTime()
@@ -31,7 +31,8 @@ public class RelativisticObject : MonoBehaviour {
     {
 		
         //Get the player's GameState, use it later for general information
-        state = GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>();
+        //state = GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>();
+        state = GameState.Instance;
 		
         checkSpeed();
 		//Get the meshfilter

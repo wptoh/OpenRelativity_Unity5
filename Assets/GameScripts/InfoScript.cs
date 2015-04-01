@@ -7,8 +7,8 @@ public class InfoScript : MonoBehaviour {
     GameState state;
 	// Use this for initialization
 	void Start () {
-	
-        state = GetComponent<GameState>();
+
+        state = GameState.Instance;// GetComponent<GameState>();
 	}
 	
 	//just print out a bunch of information onto the screen.

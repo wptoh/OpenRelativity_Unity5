@@ -47,7 +47,7 @@ public class MovementScripts: MonoBehaviour
     void Start()
     {
         //grab Game State, we need it for many actions
-        state = GetComponent<GameState>();
+        state = GameState.Instance;//GetComponent<GameState>();
         //Lock and hide cursor
         //Screen.lockCursor = true;
         Cursor.lockState = CursorLockMode.Locked;
@@ -58,7 +58,7 @@ public class MovementScripts: MonoBehaviour
         inverted = -1;
         
 		
-        viwMax = Mathf.Min(viwMax, (float)GameObject.FindGameObjectWithTag("Player").GetComponent<GameState>().MaxSpeed);
+        viwMax = Mathf.Min(viwMax, (float)state.MaxSpeed);
 		
         //frames = 0;
         StartCoroutine(WaitForCameraReady(INIT_FRAME_WAIT));
@@ -100,7 +100,7 @@ public class MovementScripts: MonoBehaviour
                     horizontalInput = (float)arg.CommandArgs [0];
                     break;
                 case GameCommand.PLAYER_VERTICAL:
-                    state.keyHit = false;
+                    state.keyHit = true;
                     verticalInput = (float)arg.CommandArgs [0];
                     break;
                 case GameCommand.LIGHT_SPEED:

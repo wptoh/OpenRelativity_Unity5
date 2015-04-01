@@ -126,9 +126,22 @@ public class GameState : MonoBehaviour
     public const int splitDistance = 21000;
     #endregion
 
+    public static GameState Instance = null;
 
     public void Awake()
     {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            if (Instance != this)
+            {
+                DestroyImmediate(this);
+            }
+        }
+
         //Initialize the player's speed to zero
         playerVelocityVector = Vector3.zero;
         playerVelocity = 0;
@@ -140,6 +153,7 @@ public class GameState : MonoBehaviour
         cSqrd = c * c;
         //And ensure that the game starts/
         movementFrozen = false;
+        keyHit = false;
         AddController(KeyboardMouseController.Instance);
     }
 
