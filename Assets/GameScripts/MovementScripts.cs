@@ -41,6 +41,9 @@ public class MovementScripts: MonoBehaviour
     private float horizontalInput = 0;
     private float verticalInput = 0;
 
+    private float cameraX = 0;
+    private float cameraY = 0;
+
     void Start()
     {
         //grab Game State, we need it for many actions

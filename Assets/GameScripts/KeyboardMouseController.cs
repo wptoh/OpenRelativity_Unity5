@@ -29,6 +29,9 @@ public class KeyboardMouseController : MonoBehaviour, IController
     private float mVertical = 0;
     private float mSpeedOfLight = 0;
 
+    private float mMouseHorizontal = 0;
+    private float mMouseVertical = 0;
+
     private ControllerCommandHandler mControllerCommand = null;
     public event ControllerCommandHandler CommandsFired
     {

@@ -12,6 +12,8 @@ namespace GameUtils
         PLAYER_HORIZONTAL = 4,
         PLAYER_VERTICAL = 5,
         LIGHT_SPEED = 6,
+        CAMERA_HORIZONTAL = 7,
+        CAMERA_VERTICAL = 8,
     }
 	
 }
